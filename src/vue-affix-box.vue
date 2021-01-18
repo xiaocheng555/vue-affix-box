@@ -36,7 +36,7 @@ export default {
     },
     throttleLimit: {
       type: Number,
-      default: 0
+      default: 50
     }
   },
   data () {
@@ -67,7 +67,7 @@ export default {
     placeholderStyle () {
       if (this.isFixed) {
         return {
-          height: this.placeholderHeight + 'px'
+          height: toPx(this.placeholderHeight)
         }
       }
     },
@@ -122,6 +122,7 @@ export default {
     updatePosition () {
       const placeholderEl = this.$refs.placeholder
       const affixEl = this.$refs.affix
+      const _oldIsFixed = this.isFixed
       if (!placeholderEl || !affixEl) return
 
       // 获取元素Rect
@@ -150,6 +151,10 @@ export default {
       }
 
       this.handleReferenceEffect(affixRect)
+      // 触发事件
+      if (this.isFixed !== _oldIsFixed) {
+        this.$emit('change', this.isFixed)
+      }
     },
     // 处理参考元素对固定层的影响
     handleReferenceEffect (affixRect) {

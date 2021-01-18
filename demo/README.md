@@ -1,24 +1,9 @@
-# demo
+# vue-doc-template
 
-## Project setup
-```
-npm install
-```
+说明文档模板，用于快速开发组件、组件库的说明文档。
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+文档模板主要使用了Vue2、Vue CLI3、Element-Ui。
 
-### Compiles and minifies for production
-```
-npm run build
-```
+# Demo
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[___Demo___](https://xiaocheng555.github.io/my-template/vue-doc-template/dist/index.html)
