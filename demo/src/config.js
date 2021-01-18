@@ -2,7 +2,7 @@
 export const logo = 'Vue-affix-box'
 
 // github地址
-export const githubUrl = 'https://github.com/xiaocheng555/my-template/tree/master/vue-doc-template'
+export const githubUrl = 'https://github.com/xiaocheng555/vue-affix-box'
 
 // 菜单配置
 export const menus = [

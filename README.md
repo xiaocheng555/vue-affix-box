@@ -2,6 +2,10 @@
 
 一个Vue插件，能将页面元素钉在可视范围。
 
+# Demo
+
+[___Demo___](https://xiaocheng555.github.io/vue-affix-box/demo/dist/index.html)
+
 ## 快速使用
 
 ### 安装
@@ -54,7 +58,7 @@ export default {
 
 ## API
 
-vue-affix-box组件与[ant-design的affix组件](https://ant.design/components/affix-cn/)的API保持一致，并在此基础上扩展了其他功能。
+vue-affix-box组件与[ant-design的affix组件](https://ant.design/components/affix-cn/)的API保持一致，并在此基础上进行了扩展。
 
 ### Props
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
