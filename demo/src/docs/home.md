@@ -59,6 +59,7 @@ export default {
 | reference | 设置 Affix 相对固定的元素 | string/object | — | — |
 | zIndex | z-index 堆叠顺序 | number | — | 10 |
 | throttleLimit | 滚动事件的节流时间 | number | — | 50 |
+| disabled | 是否禁用 | boolean | — | false |
 
 ### Methods
 | 方法名 | 说明 | 参数 |

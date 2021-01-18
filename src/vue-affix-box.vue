@@ -37,6 +37,10 @@ export default {
     throttleLimit: {
       type: Number,
       default: 50
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -124,6 +128,10 @@ export default {
       const affixEl = this.$refs.affix
       const _oldIsFixed = this.isFixed
       if (!placeholderEl || !affixEl) return
+      if (this.disabled) {
+        this.isFixed = false
+        return
+      }
 
       // 获取元素Rect
       const placeholderRect = placeholderEl.getBoundingClientRect()
@@ -200,6 +208,13 @@ export default {
         return placeholderRect.top - scrollRect.top < this.offsetTop
       } else {
         return scrollRect.bottom - placeholderRect.bottom < this.offsetBottom
+      }
+    }
+  },
+  watch: {
+    disabled (val) {
+      if (!val) {
+        this.updatePosition()
       }
     }
   },
