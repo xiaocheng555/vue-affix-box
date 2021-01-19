@@ -33,3 +33,67 @@ export function getElementRect (el) {
     return el.getBoundingClientRect()
   }
 }
+
+// 事件处理工具，解决dom重复绑定多个相同事件的问题
+class EventUtil  {
+  constructor () {
+    // 事件合集
+    window.events = this.events = []
+  }
+  // 绑定事件
+  on (listener, event, handler) {
+    let [eventEntry] = this.findEventEntry(listener, event)
+    if (!eventEntry) {
+      // 创建事件实体
+      eventEntry = {
+        listener: listener,
+        event: event,
+        handlers: [handler],
+        callback () {
+          eventEntry.handlers.forEach(hd => hd.call(this))
+        }
+      }
+      this.events.push(eventEntry)
+      // 绑定事件，相同的listener和event只绑定一次
+      listener.addEventListener(event, eventEntry.callback, {
+        passive: true
+      })
+    } else {
+      eventEntry.handlers.push(handler)
+    }
+  }
+  // 移除事件
+  off (listener, event, handler) {
+    let [eventEntry, eventIndex] = this.findEventEntry(listener, event)
+    if (eventEntry) {
+      const delIndex = eventEntry.handlers.findIndex(hd => hd === handler)
+      eventEntry.handlers.splice(delIndex, 1)
+      
+      if (eventEntry.handlers.length === 0) {
+        // 解绑事件
+        listener.removeEventListener(event, eventEntry.callback)
+        // 清除数据存储
+        this.events.splice(eventIndex, 1) 
+        eventEntry = {}
+      }
+    }
+  }
+  // 查找事件实体
+  findEventEntry (listener, event) {
+    const result = [null, -1]
+    this.events.some((item, index) => {
+      if (item.listener === listener && item.event === event) {
+        result[0] = item
+        result[1] = index
+        return true 
+      }
+    })
+    return result
+  }
+  // 清空事件合集
+  clear () {
+    this.eventMap = {}
+  }
+}
+
+export const eventUtil = new EventUtil()

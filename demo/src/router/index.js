@@ -23,7 +23,7 @@ function getMdRoutes () {
 const routes = [
   {
     path: '/',
-    rediect: {
+    redirect: {
       path: '/home'
     }
   },

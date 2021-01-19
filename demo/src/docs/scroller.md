@@ -26,7 +26,7 @@ export default {
     }
     window.addEventListener('scroll', this.updateAffix)
   },
-  beforeDestory () {
+  beforeDestroy () {
     window.removeEventListener('scroll', this.updateAffix)
   }
 }

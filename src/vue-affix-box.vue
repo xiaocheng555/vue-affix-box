@@ -13,7 +13,7 @@
 <script>
 import { throttle } from 'throttle-debounce'
 import ResizeObserver from 'resize-observer-polyfill'
-import { toPx, getElement, getElementRect } from './utils'
+import { toPx, getElement, getElementRect, eventUtil } from './utils'
 
 export default {
   name: 'c-affix',
@@ -101,10 +101,10 @@ export default {
     // 绑定事件
     bindEvent () {
       this.handleUpdatePosition = throttle(this.throttleLimit, this.updatePosition)
-      this.scroller.addEventListener('scroll', this.handleUpdatePosition, {
+      eventUtil.on(this.scroller, 'scroll', this.handleUpdatePosition, {
         passive: true
       })
-      window.addEventListener('resize', this.handleUpdatePosition)
+      eventUtil.on(window, 'resize', this.handleUpdatePosition)
       this.bindObserver()
     },
     // 绑定元素尺寸监听事件
@@ -119,7 +119,8 @@ export default {
     },
     // 取消绑定事件
     unbindEvent () {
-      this.scroller && this.scroller.removeEventListener('scroll', this.handleUpdatePosition)
+      eventUtil.off(this.scroller, 'scroll', this.handleUpdatePosition)
+      eventUtil.off(window, 'resize', this.handleUpdatePosition)
       this.observer && this.observer.disconnect()
     },
     // 更新位置
