@@ -1,0 +1,22 @@
+/*
+ * File: .editorconfig
+ * File Created: 2021-01-19 11:31:19 am
+ * Author: zhanghc11 (huancheng.zhang@meicloud.com)
+ * Copyright: 2017 - 2021 Copyright (c), 深圳美云智数科技有限公司
+ * -----
+ * Last Modified: 2021-01-19 11:31:19 am
+ * Modified By: zhanghc11 (huancheng.zhang@meicloud.com>)
+ */
+# editorconfig.org
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false

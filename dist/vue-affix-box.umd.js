@@ -24,6 +24,84 @@
     return _typeof(obj);
   }
 
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
   // 转为px值
   function toPx(val) {
     return Number.isNaN(+val) ? val : "".concat(val, "px");
@@ -56,7 +134,96 @@
     } else {
       return el.getBoundingClientRect();
     }
-  }
+  } // 事件处理工具，解决dom重复绑定多个相同事件的问题
+
+  var EventUtil = /*#__PURE__*/function () {
+    function EventUtil() {
+      _classCallCheck(this, EventUtil);
+
+      // 事件合集
+      this.events = []; // 调试用
+      // window._events = this.events = []
+    } // 绑定事件
+
+
+    _createClass(EventUtil, [{
+      key: "on",
+      value: function on(listener, event, handler) {
+        var _this$findEventEntry = this.findEventEntry(listener, event),
+            _this$findEventEntry2 = _slicedToArray(_this$findEventEntry, 1),
+            eventEntry = _this$findEventEntry2[0];
+
+        if (!eventEntry) {
+          // 创建事件实体
+          eventEntry = {
+            listener: listener,
+            event: event,
+            handlers: [handler],
+            callback: function callback() {
+              var _this = this;
+
+              eventEntry.handlers.forEach(function (hd) {
+                return hd.call(_this);
+              });
+            }
+          };
+          this.events.push(eventEntry); // 绑定事件，相同的listener和event只绑定一次
+
+          listener.addEventListener(event, eventEntry.callback, {
+            passive: true
+          });
+        } else {
+          eventEntry.handlers.push(handler);
+        }
+      } // 移除事件
+
+    }, {
+      key: "off",
+      value: function off(listener, event, handler) {
+        var _this$findEventEntry3 = this.findEventEntry(listener, event),
+            _this$findEventEntry4 = _slicedToArray(_this$findEventEntry3, 2),
+            eventEntry = _this$findEventEntry4[0],
+            eventIndex = _this$findEventEntry4[1];
+
+        if (eventEntry) {
+          var delIndex = eventEntry.handlers.indexOf(handler);
+          delIndex > -1 && eventEntry.handlers.splice(delIndex, 1);
+
+          if (eventEntry.handlers.length === 0) {
+            // 解绑事件
+            listener.removeEventListener(event, eventEntry.callback); // 清除数据存储
+
+            this.events.splice(eventIndex, 1);
+            eventEntry = {};
+          }
+        }
+      } // 查找事件实体
+
+    }, {
+      key: "findEventEntry",
+      value: function findEventEntry(listener, event) {
+        var result = [null, -1];
+        this.events.some(function (item, index) {
+          if (item.listener === listener && item.event === event) {
+            result[0] = item;
+            result[1] = index;
+            return true;
+          }
+        });
+        return result;
+      } // 清空事件合集
+
+    }, {
+      key: "clear",
+      value: function clear() {
+        this.eventMap = {};
+      }
+    }]);
+
+    return EventUtil;
+  }();
+
+  var eventUtil = new EventUtil();
 
   //
   var script = {
@@ -80,7 +247,11 @@
       },
       throttleLimit: {
         type: Number,
-        "default": 0
+        "default": 50
+      },
+      disabled: {
+        type: Boolean,
+        "default": false
       }
     },
     data: function data() {
@@ -111,7 +282,7 @@
       placeholderStyle: function placeholderStyle() {
         if (this.isFixed) {
           return {
-            height: this.placeholderHeight + 'px'
+            height: toPx(this.placeholderHeight)
           };
         }
       },
@@ -145,10 +316,10 @@
       // 绑定事件
       bindEvent: function bindEvent() {
         this.handleUpdatePosition = throttleDebounce.throttle(this.throttleLimit, this.updatePosition);
-        this.scroller.addEventListener('scroll', this.handleUpdatePosition, {
+        eventUtil.on(this.scroller, 'scroll', this.handleUpdatePosition, {
           passive: true
         });
-        window.addEventListener('resize', this.handleUpdatePosition);
+        eventUtil.on(window, 'resize', this.handleUpdatePosition);
         this.bindObserver();
       },
       // 绑定元素尺寸监听事件
@@ -166,14 +337,22 @@
       },
       // 取消绑定事件
       unbindEvent: function unbindEvent() {
-        this.scroller && this.scroller.removeEventListener('scroll', this.handleUpdatePosition);
+        eventUtil.off(this.scroller, 'scroll', this.handleUpdatePosition);
+        eventUtil.off(window, 'resize', this.handleUpdatePosition);
         this.observer && this.observer.disconnect();
       },
       // 更新位置
       updatePosition: function updatePosition() {
         var placeholderEl = this.$refs.placeholder;
         var affixEl = this.$refs.affix;
-        if (!placeholderEl || !affixEl) return; // 获取元素Rect
+        var _oldIsFixed = this.isFixed;
+        if (!placeholderEl || !affixEl) return;
+
+        if (this.disabled) {
+          this.isFixed = false;
+          return;
+        } // 获取元素Rect
+
 
         var placeholderRect = placeholderEl.getBoundingClientRect();
         var affixRect = affixEl.getBoundingClientRect();
@@ -197,7 +376,11 @@
           this.affixPos.bottom = scrollRect.height - scrollRect.bottom + this.offsetBottom;
         }
 
-        this.handleReferenceEffect(affixRect);
+        this.handleReferenceEffect(affixRect); // 触发事件
+
+        if (this.isFixed !== _oldIsFixed) {
+          this.$emit('change', this.isFixed);
+        }
       },
       // 处理参考元素对固定层的影响
       handleReferenceEffect: function handleReferenceEffect(affixRect) {
@@ -243,6 +426,13 @@
           return placeholderRect.top - scrollRect.top < this.offsetTop;
         } else {
           return scrollRect.bottom - placeholderRect.bottom < this.offsetBottom;
+        }
+      }
+    },
+    watch: {
+      disabled: function disabled(val) {
+        if (!val) {
+          this.updatePosition();
         }
       }
     },
@@ -414,7 +604,7 @@
     /* style */
     const __vue_inject_styles__ = function (inject) {
       if (!inject) return
-      inject("data-v-503e7a8c_0", { source: ".c-affix.is-fixed {\n  position: fixed;\n  z-index: 10;\n}\n", map: {"version":3,"sources":["vue-affix-box.vue"],"names":[],"mappings":"AAAA;EACE,eAAe;EACf,WAAW;AACb","file":"vue-affix-box.vue","sourcesContent":[".c-affix.is-fixed {\n  position: fixed;\n  z-index: 10;\n}\n"]}, media: undefined });
+      inject("data-v-49898be0_0", { source: ".c-affix.is-fixed {\n  position: fixed;\n  z-index: 10;\n}\n", map: {"version":3,"sources":["vue-affix-box.vue"],"names":[],"mappings":"AAAA;EACE,eAAe;EACf,WAAW;AACb","file":"vue-affix-box.vue","sourcesContent":[".c-affix.is-fixed {\n  position: fixed;\n  z-index: 10;\n}\n"]}, media: undefined });
 
     };
     /* scoped */

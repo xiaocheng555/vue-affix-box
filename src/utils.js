@@ -35,11 +35,14 @@ export function getElementRect (el) {
 }
 
 // 事件处理工具，解决dom重复绑定多个相同事件的问题
-class EventUtil  {
+class EventUtil {
   constructor () {
     // 事件合集
-    window.events = this.events = []
+    this.events = []
+    // 调试用
+    // window._events = this.events = []
   }
+
   // 绑定事件
   on (listener, event, handler) {
     let [eventEntry] = this.findEventEntry(listener, event)
@@ -62,22 +65,24 @@ class EventUtil  {
       eventEntry.handlers.push(handler)
     }
   }
+
   // 移除事件
   off (listener, event, handler) {
     let [eventEntry, eventIndex] = this.findEventEntry(listener, event)
     if (eventEntry) {
-      const delIndex = eventEntry.handlers.findIndex(hd => hd === handler)
-      eventEntry.handlers.splice(delIndex, 1)
-      
+      const delIndex = eventEntry.handlers.indexOf(handler)
+      delIndex > -1 && eventEntry.handlers.splice(delIndex, 1)
+
       if (eventEntry.handlers.length === 0) {
         // 解绑事件
         listener.removeEventListener(event, eventEntry.callback)
         // 清除数据存储
-        this.events.splice(eventIndex, 1) 
+        this.events.splice(eventIndex, 1)
         eventEntry = {}
       }
     }
   }
+
   // 查找事件实体
   findEventEntry (listener, event) {
     const result = [null, -1]
@@ -85,11 +90,12 @@ class EventUtil  {
       if (item.listener === listener && item.event === event) {
         result[0] = item
         result[1] = index
-        return true 
+        return true
       }
     })
     return result
   }
+
   // 清空事件合集
   clear () {
     this.eventMap = {}

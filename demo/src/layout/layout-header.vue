@@ -1,6 +1,6 @@
 <template>
   <div class="layout-header">
-    <a href="javascript:;" class="layout-header-logo">
+    <a href="/" class="layout-header-logo">
       {{ logo }}
     </a>
     <div class="layout-header-right">
