@@ -81,7 +81,7 @@ export default {
         const { top, bottom, left, width } = this.affixPos
         return {
           zIndex: this.zIndex,
-          width: toPx(width),
+          maxWidth: toPx(width),
           top: toPx(top),
           left: toPx(left),
           bottom: toPx(bottom)
