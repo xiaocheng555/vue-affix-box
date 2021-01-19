@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "element-ui": "^2.15.0",
+    "highlight.js": "^10.5.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0"
   },
@@ -27,7 +28,6 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
-    "highlight": "^0.2.4",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "markdown-it": "^8.4.2",

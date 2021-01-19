@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import Test from '../docs/test.md'
 
 Vue.use(VueRouter)
 
