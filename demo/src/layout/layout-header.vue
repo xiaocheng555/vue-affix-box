@@ -1,8 +1,8 @@
 <template>
   <div class="layout-header">
-    <a href="/" class="layout-header-logo">
+    <router-link to="/" class="layout-header-logo">
       {{ logo }}
-    </a>
+    </router-link>
     <div class="layout-header-right">
       <a class="github-icon" :href="githubUrl" target="_blank"></a>
     </div>
