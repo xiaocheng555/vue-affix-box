@@ -10,6 +10,10 @@ const wrap = function (render) {
 
 module.exports = {
   publicPath: isProduction ? '././' : '/',
+  devServer: {
+    // 自动开启浏览器
+    open: true
+  },
   chainWebpack: (config) => {
     config.module
       .rule('md')

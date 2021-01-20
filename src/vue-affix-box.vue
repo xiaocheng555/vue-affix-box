@@ -41,6 +41,11 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    // 固定层宽度是否紧凑，true则使用max-width，false则使用width；解决固定层宽度超出子元素宽度，会遮挡住其他dom元素
+    compact: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -81,7 +86,7 @@ export default {
         const { top, bottom, left, width } = this.affixPos
         return {
           zIndex: this.zIndex,
-          width: toPx(width),
+          [this.compact ? 'max-width' : 'width']: toPx(width),
           top: toPx(top),
           left: toPx(left),
           bottom: toPx(bottom)
