@@ -1,6 +1,6 @@
 {
   "name": "vue-affix-box",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A vue plugin to fix the element on your applications",
   "main": "dist/vue-affix-box.umd.js",
   "module": "dist/vue-affix-box.es.js",

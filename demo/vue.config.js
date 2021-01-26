@@ -11,7 +11,7 @@ const wrap = function (render) {
 module.exports = {
   publicPath: isProduction ? '././' : '/',
   devServer: {
-    // 自动开启浏览器
+    // 自动打开启浏览器
     open: true
   },
   chainWebpack: (config) => {
@@ -60,5 +60,7 @@ module.exports = {
           return source;
         }
       })
-  }
+  },
+  // 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
+  parallel: false
 }

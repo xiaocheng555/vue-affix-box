@@ -28,6 +28,30 @@
 ```
 :::
 
+:::demo 
+```html
+<template>
+  <div>
+    <div class="reference-box2">
+      <vue-affix-box 
+        reference=".reference-box2" 
+        :offset-bottom="100"
+        :throttle-limit="0">
+        <el-button>affix 元素</el-button>
+      </vue-affix-box>
+    <div>
+  </div>
+</template>
+
+<style lang="less">
+.reference-box2 {
+  padding: 200px 20px 100px;
+  border: 1px solid #409EFF;
+}
+</style>
+```
+:::
+
 ### 标题相对固定
 
 根据 `reference` 的特性，可以实现下面比较酷的效果。

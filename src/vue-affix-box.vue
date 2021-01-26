@@ -11,18 +11,25 @@
 </template>
 
 <script>
-import { throttle } from 'throttle-debounce'
+import throttle from 'throttle-debounce/throttle'
 import ResizeObserver from 'resize-observer-polyfill'
 import { toPx, getElement, getElementRect, eventUtil } from './utils'
 
 export default {
   name: 'c-affix',
   props: {
+    // 目标滚动元素
     target: {
       type: String | Object
     },
+    // 参考元素
     reference: {
       type: String | Object
+    },
+    // 超过视图距离时，参考元素定位不变（优化，元素超出视图一定范围内，位置不变，能减少不必要渲染）
+    overView: {
+      type: Number,
+      default: 400
     },
     offsetTop: {
       type: Number,
@@ -106,9 +113,7 @@ export default {
     // 绑定事件
     bindEvent () {
       this.handleUpdatePosition = throttle(this.throttleLimit, this.updatePosition)
-      eventUtil.on(this.scroller, 'scroll', this.handleUpdatePosition, {
-        passive: true
-      })
+      eventUtil.on(this.scroller, 'scroll', this.handleUpdatePosition)
       eventUtil.on(window, 'resize', this.handleUpdatePosition)
       this.bindObserver()
     },
@@ -185,6 +190,16 @@ export default {
         // 固定层是否超出参考元素顶部
         this.affixPos.bottom = 'auto'
         this.affixPos.top = referenceRect.top
+      }
+      // 优化：固定层位置不能超过可视范围的设置距离（overView）,减少不必要渲染
+      const allowRange = {
+        min: -this.overView,
+        max: this.overView + window.innerHeight
+      }
+      if (this.affixPos.top < allowRange.min) {
+        this.affixPos.top = allowRange.min
+      } else if (this.affixPos.top > allowRange.max) {
+        this.affixPos.top = allowRange.max
       }
     },
     // 获取固定层保持固定时的尺寸大小，非真实dom的尺寸，区别是真实dom偶尔会跟随参考元素运动，不是一直固定

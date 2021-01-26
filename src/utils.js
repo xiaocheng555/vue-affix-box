@@ -34,8 +34,27 @@ export function getElementRect (el) {
   }
 }
 
-// 事件处理工具，解决dom重复绑定多个相同事件的问题
-class EventUtil {
+/*
+ * addEventListener是否支持passive属性
+ */
+function testSupportsPassive () {
+  let support = false
+  try {
+    const opts = Object.defineProperty({}, 'passive', {
+      get: function () {
+        support = true
+      }
+    })
+    window.addEventListener('test', null, opts)
+  } catch (e) { }
+  return support
+}
+export const supportsPassive = testSupportsPassive()
+
+/*
+ * 事件处理工具，解决dom重复绑定多个相同事件的问题
+ */
+export class EventUtil {
   constructor () {
     // 事件合集
     this.events = []
@@ -44,7 +63,7 @@ class EventUtil {
   }
 
   // 绑定事件
-  on (listener, event, handler) {
+  on (listener, event, handler, capture = false) {
     let [eventEntry] = this.findEventEntry(listener, event)
     if (!eventEntry) {
       // 创建事件实体
@@ -57,17 +76,19 @@ class EventUtil {
         }
       }
       this.events.push(eventEntry)
-      // 绑定事件，相同的listener和event只绑定一次
-      listener.addEventListener(event, eventEntry.callback, {
+      const options = supportsPassive ? {
+        capture: capture,
         passive: true
-      })
+      } : capture
+      // 绑定事件，相同的listener和event只绑定一次
+      listener.addEventListener(event, eventEntry.callback, options)
     } else {
       eventEntry.handlers.push(handler)
     }
   }
 
   // 移除事件
-  off (listener, event, handler) {
+  off (listener, event, handler, capture = false) {
     let [eventEntry, eventIndex] = this.findEventEntry(listener, event)
     if (eventEntry) {
       const delIndex = eventEntry.handlers.indexOf(handler)
@@ -75,7 +96,7 @@ class EventUtil {
 
       if (eventEntry.handlers.length === 0) {
         // 解绑事件
-        listener.removeEventListener(event, eventEntry.callback)
+        listener.removeEventListener(event, eventEntry.callback, capture)
         // 清除数据存储
         this.events.splice(eventIndex, 1)
         eventEntry = {}
@@ -98,7 +119,7 @@ class EventUtil {
 
   // 清空事件合集
   clear () {
-    this.eventMap = {}
+    this.events = []
   }
 }
 

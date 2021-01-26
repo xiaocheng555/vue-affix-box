@@ -45,6 +45,7 @@ export default {
     }
     .layout-sidebar {
       position: static;
+      overflow: visible;
       width: 100%;
       .sidebar-item-title {
         margin-left: 20px;
